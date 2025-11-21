@@ -1,0 +1,61 @@
+# Visual Studio
+.vs/
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.ide
+
+# Build artifacts
+bin/
+obj/
+artifacts/
+
+# NuGet
+packages/
+*.nupkg
+.nuget/
+
+# Rider
+.idea/
+*.sln.iml
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Entity Framework
+Migrations/
+
+# Dotnet publish
+publish/
+
+# Local app settings / secrets
+appsettings.*.Local.json
+secrets.json
+.env
+
+# Database files
+*.db
+
+# Test results
+TestResults/
+
+# Resharper
+_ReSharper*/
+*.DotSettings
+
+# Misc
+*.vspscc
+*.vssscc
+
+# Ignore generated files
+**/*.g.cs
+**/*.Designer.cs
+
+# Web specific
+node_modules/
+wwwroot/dist/
