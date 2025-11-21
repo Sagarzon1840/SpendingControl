@@ -11,9 +11,7 @@ namespace SpendingControl.Domain.Entities
 
         //Nav properties
         public SpendingHeader? ExpenseHeader { get; set; }
-        public SpendType? ExpenseType { get; set; }
-
-        // simple validation for detail
+        public SpendType? ExpenseType { get; set; }        
         public void Validate()
         {
             if (ExpenseTypeId <= 0) throw new ArgumentException("ExpenseTypeId must be provided.", nameof(ExpenseTypeId));

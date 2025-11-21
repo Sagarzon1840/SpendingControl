@@ -1,12 +1,11 @@
-﻿using System;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using SpendingControl.Domain.Entities;
 using SpendingControl.Infrastructure.Persistence;
+using SpendingControl.Domain.Interfaces.Repositories;
 
 namespace SpendingControl.Infrastructure.Repositories
 {
-    internal class UserRepository
+    internal class UserRepository : IUserRepository
     {
         private readonly AppDbContext _db;
         public UserRepository(AppDbContext db) => _db = db;
@@ -25,6 +24,7 @@ namespace SpendingControl.Infrastructure.Repositories
         {
             _db.Users.Add(user);
             await _db.SaveChangesAsync();
+
             return user;
         }
     }

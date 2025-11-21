@@ -26,7 +26,7 @@ namespace SpendingControl.Infrastructure.Repositories
 
         public async Task<SpendType> AddAsync(SpendType spendType)
         {
-            // compute next code for user
+            // Read next code for user
             var existing = await _db.SpendTypes.Where(s => s.UserId == spendType.UserId).ToListAsync();
             spendType.Code = SpendTypeCodeGenerator.NextCode(existing);
             _db.SpendTypes.Add(spendType);

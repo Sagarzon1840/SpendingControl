@@ -1,6 +1,7 @@
 using Microsoft.OpenApi;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using SpendingControl.Api.Filters;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,7 +29,9 @@ builder.Services.AddControllers(options =>
 });
 
 var jwt = configuration.GetSection("Jwt");
-//var key = Encoding.UTF8.GetBytes(jwtSection["Key"]!);
+var key = jwt["Key"] ?? string.Empty;
+var issuer = jwt["Issuer"] ?? "spendingcontrol";
+var audience = jwt["Audience"] ?? "spendingcontrol";
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -40,9 +43,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidateLifetime = true,
 
-            //ValidIssuer = jwtSection["Issuer"],
-            //ValidAudience = jwtSection["Audience"],
-            //IssuerSigningKey = new SymmetricSecurityKey(key),
+            ValidIssuer = issuer,
+            ValidAudience = audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
 
             ClockSkew = TimeSpan.Zero
         };
