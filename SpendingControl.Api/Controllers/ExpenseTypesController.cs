@@ -22,6 +22,7 @@ namespace SpendingControl.Api.Controllers
         {
             var userId = GetUserIdFromToken();
             var list = await _service.GetByUserAsync(userId);
+
             return Ok(list);
         }
 
@@ -30,15 +31,16 @@ namespace SpendingControl.Api.Controllers
         {
             dto.UserId = GetUserIdFromToken();
             var created = await _service.CreateAsync(dto);
+
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var entity = await _service.GetByIdAsync(id);
-            if (entity == null) return NotFound();
-            if (entity.UserId != GetUserIdFromToken()) return Forbid();
+            var userId = GetUserIdFromToken();
+            var entity = await _service.GetByIdAsync(id, userId);
+
             return Ok(entity);
         }
 
@@ -47,7 +49,9 @@ namespace SpendingControl.Api.Controllers
         {
             var userId = GetUserIdFromToken();
             dto.Id = id;
+
             await _service.UpdateAsync(dto, userId);
+
             return NoContent();
         }
 
@@ -55,14 +59,17 @@ namespace SpendingControl.Api.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             await _service.DeleteAsync(id, GetUserIdFromToken());
+
             return NoContent();
         }
 
         private Guid GetUserIdFromToken()
         {
             var sub = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
             if (string.IsNullOrEmpty(sub) || !Guid.TryParse(sub, out var userId))
                 throw new UnauthorizedAccessException("Invalid user id in token");
+
             return userId;
         }
     }

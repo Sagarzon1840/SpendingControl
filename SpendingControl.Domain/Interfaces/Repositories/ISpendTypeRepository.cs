@@ -9,6 +9,7 @@ namespace SpendingControl.Domain.Interfaces.Repositories
     {
         Task<IEnumerable<SpendType>> GetByUserAsync(Guid userId);
         Task<SpendType?> GetByIdAsync(int id);
+        Task<SpendType?> GetByIdForUserAsync(Guid userId, int id);
         Task<SpendType> AddAsync(SpendType spendType);
         Task UpdateAsync(SpendType spendType);
         Task DeleteAsync(int id);

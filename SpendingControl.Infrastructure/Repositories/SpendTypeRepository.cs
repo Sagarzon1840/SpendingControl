@@ -24,26 +24,36 @@ namespace SpendingControl.Infrastructure.Repositories
             return await _db.SpendTypes.FindAsync(id);
         }
 
+        public async Task<SpendType?> GetByIdForUserAsync(Guid userId, int id)
+        {
+            return await _db.SpendTypes.Where(s => s.UserId == userId && s.Id == id && s.IsActive).FirstOrDefaultAsync();
+        }
+
         public async Task<SpendType> AddAsync(SpendType spendType)
         {
             // Read next code for user
             var existing = await _db.SpendTypes.Where(s => s.UserId == spendType.UserId).ToListAsync();
             spendType.Code = SpendTypeCodeGenerator.NextCode(existing);
             _db.SpendTypes.Add(spendType);
+
             await _db.SaveChangesAsync();
+
             return spendType;
         }
 
         public async Task UpdateAsync(SpendType spendType)
         {
             _db.SpendTypes.Update(spendType);
+
             await _db.SaveChangesAsync();
         }
         public async Task DeleteAsync(int id)
         {
             var entity = await _db.SpendTypes.FindAsync(id);
+
             if (entity == null) return;
             entity.IsActive = false; // soft delete
+
             await _db.SaveChangesAsync();
         }
     }

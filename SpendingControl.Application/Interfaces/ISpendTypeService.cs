@@ -8,7 +8,7 @@ namespace SpendingControl.Application.Interfaces
     public interface ISpendTypeService
     {
         Task<IEnumerable<SpendType>> GetByUserAsync(Guid userId);
-        Task<SpendType?> GetByIdAsync(int id);
+        Task<SpendType> GetByIdAsync(int id, Guid userId);
         Task<SpendType> CreateAsync(SpendType spendType);
         Task UpdateAsync(SpendType spendType, Guid userId);
         Task DeleteAsync(int id, Guid userId);
