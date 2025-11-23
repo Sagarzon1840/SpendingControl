@@ -28,6 +28,7 @@ namespace SpendingControl.Infrastructure.Repositories
         {
             _db.MonetaryFunds.Add(fund);
             await _db.SaveChangesAsync();
+
             return fund;
         }
 
@@ -42,6 +43,7 @@ namespace SpendingControl.Infrastructure.Repositories
             var entity = await _db.MonetaryFunds.FindAsync(id);
             if (entity == null) return;
             _db.MonetaryFunds.Remove(entity);
+
             await _db.SaveChangesAsync();
         }
     }

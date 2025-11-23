@@ -1,7 +1,8 @@
-using System;
+using System.Text.Json.Serialization;
 
 namespace SpendingControl.Domain.Entities
 {
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum FundType
     {
         BankAccount,
@@ -18,7 +19,7 @@ namespace SpendingControl.Domain.Entities
 
         public decimal InitialBalance { get; set; }
 
-        // Current balance can be computed by repositories/services. Keep as mutable helper for in-memory operations.
+        // Helper for in-memory operations.
         public decimal CurrentBalance { get; private set; }
 
         public MonetaryFund()
@@ -29,7 +30,7 @@ namespace SpendingControl.Domain.Entities
         // Apply a deposit to the in-memory balance
         public void ApplyDeposit(decimal amount)
         {
-            if (amount <= 0) throw new ArgumentException("Deposit amount must be positive.", nameof(amount));
+            if (amount < 0) throw new ArgumentException("Deposit amount must be positive.", nameof(amount));
             CurrentBalance += amount;
         }
 

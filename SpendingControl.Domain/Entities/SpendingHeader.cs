@@ -22,6 +22,7 @@ namespace SpendingControl.Domain.Entities
         public DocumentType DocumentType { get; set; }
         public List<SpendingDetail> Details { get; set; } = new List<SpendingDetail>();
         public decimal TotalAmount => Details?.Sum(d => d.Amount) ?? 0m;
+        public bool IsValid { get; set; } = true; // mark invalid when overdraft occurs
 
         // Validate that a header always has at least one detail before saving
         public void ValidateHasDetails()

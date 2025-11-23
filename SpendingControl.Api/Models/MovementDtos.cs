@@ -1,14 +1,13 @@
 using System;
 
-namespace SpendingControl.Domain.Entities
+namespace SpendingControl.Api.Models
 {
-    public class Deposit
+    public class MovementResponseDto
     {
-        public Guid Id { get; set; }
         public DateTime Date { get; set; }
         public Guid FundId { get; set; }
+        public string Type { get; set; } = string.Empty; // Deposit or Expense
         public decimal Amount { get; set; }
-        // Optional description of the deposit
         public string? Description { get; set; }
     }
 }

@@ -13,6 +13,7 @@ namespace SpendingControl.Infrastructure.Persistence.Configs
             b.Property(h => h.MerchantName).HasMaxLength(200);
             b.Property(h => h.Observations).HasMaxLength(1000);
             b.Property(h => h.DocumentType).IsRequired();
+            b.Property(h => h.IsValid).IsRequired().HasDefaultValue(true);
 
             // Skip TotalAmount - Is computed from details in domain
             b.Ignore(h => h.TotalAmount);

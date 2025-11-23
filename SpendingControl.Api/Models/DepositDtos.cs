@@ -1,14 +1,14 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 
-namespace SpendingControl.Domain.Entities
+namespace SpendingControl.Api.Models
 {
-    public class Deposit
+    public class DepositResponseDto
     {
         public Guid Id { get; set; }
-        public DateTime Date { get; set; }
         public Guid FundId { get; set; }
+        public DateTime Date { get; set; }
         public decimal Amount { get; set; }
-        // Optional description of the deposit
         public string? Description { get; set; }
     }
 }

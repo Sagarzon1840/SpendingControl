@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using SpendingControl.Api.Helpers;
+using SpendingControl.Application.Interfaces;
 using System;
 using System.Threading.Tasks;
 
@@ -10,11 +12,18 @@ namespace SpendingControl.Api.Controllers
     [Authorize]
     public class MovementsController : ControllerBase
     {
-        [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] Guid userId, [FromQuery] DateTime? from = null, [FromQuery] DateTime? to = null, [FromQuery] int page = 1, [FromQuery] int size = 50)
+        private readonly IMovementService _movementService;
+        public MovementsController(IMovementService movementService)
         {
-            // TODO: implement combining deposits and expenses into MovementViewDTO
-            return Ok();
+            _movementService = movementService;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Get([FromQuery] DateTime? from = null, [FromQuery] DateTime? to = null, [FromQuery] int page = 1, [FromQuery] int size = 50)
+        {
+            var userId = UserContextHelper.GetUserId(HttpContext);
+            var movements = await _movementService.GetMovementsAsync(userId, from, to, page, size);
+            return Ok(movements);
         }
     }
 }

@@ -12,6 +12,7 @@ namespace SpendingControl.Infrastructure.Persistence.Configs
             b.Property(d => d.ExpenseHeaderId).IsRequired();
             b.Property(d => d.ExpenseTypeId).IsRequired();
             b.Property(d => d.Amount).HasColumnType("decimal(18,2)").IsRequired();
+            b.Property(d => d.Description).HasMaxLength(300);
 
             b.HasOne(d => d.ExpenseType)
              .WithMany()

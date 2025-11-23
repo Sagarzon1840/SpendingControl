@@ -21,7 +21,8 @@ namespace SpendingControl.Application.UseCases
         }
 
         public async Task<SpendType> GetByIdAsync(int id, Guid userId)
-        {            
+        {
+            if (id <= 0) throw new ArgumentException("id must be positive", nameof(id));
             if (userId == Guid.Empty) throw new ArgumentException("userId is required", nameof(userId));
 
             var entity = await _repo.GetByIdForUserAsync(userId, id) ?? throw new KeyNotFoundException("Spend type not found");
@@ -49,6 +50,7 @@ namespace SpendingControl.Application.UseCases
         public async Task UpdateAsync(SpendType spendType, Guid userId)
         {
             if (spendType == null) throw new ArgumentNullException(nameof(spendType));
+            if (spendType.Id <= 0) throw new ArgumentException("Id must be positive", nameof(spendType.Id));
             if (userId == Guid.Empty) throw new ArgumentException("userId is required", nameof(userId));
 
             var current = await _repo.GetByIdForUserAsync(userId, spendType.Id) ?? throw new KeyNotFoundException("Spend type not found");
@@ -70,6 +72,7 @@ namespace SpendingControl.Application.UseCases
 
         public async Task DeleteAsync(int id, Guid userId)
         {
+            if (id <= 0) throw new ArgumentException("id must be positive", nameof(id));
             if (userId == Guid.Empty) throw new ArgumentException("userId is required", nameof(userId));
 
             var current = await _repo.GetByIdForUserAsync(userId, id) ?? throw new KeyNotFoundException("Spend type not found");

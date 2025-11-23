@@ -11,6 +11,7 @@ namespace SpendingControl.Infrastructure.Persistence.Configs
             b.HasKey(d => d.Id);
             b.Property(d => d.Date).IsRequired();
             b.Property(d => d.Amount).HasColumnType("decimal(18,2)").IsRequired();
+            b.Property(d => d.Description).HasMaxLength(500); // optional
 
             b.HasOne<MonetaryFund>().WithMany().HasForeignKey(d => d.FundId).OnDelete(DeleteBehavior.Cascade);
         }

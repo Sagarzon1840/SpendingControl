@@ -1,14 +1,12 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-using SpendingControl.Application.DTOs;
+using Microsoft.IdentityModel.Tokens;
 using SpendingControl.Application.Interfaces;
 using SpendingControl.Domain.Entities;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System;
+using System.Text;
+using SpendingControl.Api.Models;
 
 namespace SpendingControl.Api.Controllers
 {
@@ -26,25 +24,23 @@ namespace SpendingControl.Api.Controllers
         }
 
         [HttpPost("register")]
+        [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] UserRegisterDTO dto)
         {
             var user = new User { UserName = dto.Username, Name = dto.Name };
             var ok = await _userService.UserRegisterAsync(user, dto.Password);
-
             if (!ok) return BadRequest();
-
-            return Ok(new { user.Id });
+            var response = new UserResponseDTO { Id = user.Id, Username = user.UserName, Name = user.Name, DateRegistered = user.DateRegistered };
+            return Ok(response);
         }
 
         [HttpPost("login")]
+        [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] UsersLoginDTO dto)
         {
-            var user = await _userService.UserLoginAsync(dto);
-
+            var user = await _userService.UserLoginAsync(dto.Username, dto.Password);
             if (user is null) return Unauthorized();
-
             var token = GenerateToken(user);
-
             return Ok(new { token });
         }
 

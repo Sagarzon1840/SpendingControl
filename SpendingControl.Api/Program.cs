@@ -1,21 +1,22 @@
-using Microsoft.OpenApi;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using SpendingControl.Api.Filters;
+using SpendingControl.Application.Configuration; // AddApplication
+using SpendingControl.Infrastructure.Configuration; // AddInfrastructure
 using System.Text;
+using Microsoft.OpenApi.Models;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
+// Register layers
+builder.Services.AddApplication();
+builder.Services.AddInfrastructure(configuration);
+
 builder.Services.AddCors(options => {
     options.AddPolicy("AllowAll",
-        builder =>
-        {
-            builder
-            .AllowAnyOrigin()
-            .AllowAnyMethod()
-            .AllowAnyHeader();
-        });
+        p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 });
 
 builder.Services.AddControllers(options =>
@@ -23,6 +24,7 @@ builder.Services.AddControllers(options =>
     options.Filters.Add<ModelValidationFilter>();
     options.Filters.Add<ValidationExceptionFilter>();
 })
+.AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()))
 .ConfigureApiBehaviorOptions(options =>
 {
     options.SuppressModelStateInvalidFilter = true;
@@ -42,11 +44,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidateIssuerSigningKey = true,
             ValidateLifetime = true,
-
             ValidIssuer = issuer,
             ValidAudience = audience,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
-
             ClockSkew = TimeSpan.Zero
         };
     });
@@ -60,39 +60,42 @@ builder.Services.AddSwaggerGen(c =>
     {
         Title = "SpendingControl API",
         Version = "v1",
-        Description = "API para gestionar gastos",
+        Description = "API to spending control, deposits and monthly info per type.",
     });
 
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Auth using Bearer'",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT"
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
+            },
+            Array.Empty<string>()
+        }
+    });
 });
 
 var app = builder.Build();
 
-var isLambda = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("LAMBDA_FUNCTION_NAME"));
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
-
-// Enable CORS policy
 app.UseCors("AllowAll");
-app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseEndpoints(e =>
-{
-    e.MapControllers();
-
-    e.MapGet("/", c =>
-    {
-        c.Response.Redirect("/swagger");
-        return Task.CompletedTask;
-    });
-});
+app.MapControllers();
+app.MapGet("/", () => Results.Redirect("/swagger")).ExcludeFromDescription();
 
 app.Run();

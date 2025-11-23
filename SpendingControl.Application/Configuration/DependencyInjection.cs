@@ -13,6 +13,9 @@ namespace SpendingControl.Application.Configuration
             services.AddScoped<IMonetaryFundService, MonetaryFundService>();
             services.AddScoped<IBudgetService, BudgetService>();
             services.AddScoped<IDepositService, DepositService>();
+            services.AddScoped<IExpenseService, ExpenseService>();
+            services.AddScoped<IReportService, ReportService>();
+            services.AddScoped<IMovementService, MovementService>();
 
             return services;
         }

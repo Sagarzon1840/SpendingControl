@@ -8,6 +8,7 @@ namespace SpendingControl.Domain.Entities
         public Guid ExpenseHeaderId { get; set; }
         public int ExpenseTypeId { get; set; }
         public decimal Amount { get; set; }
+        public string? Description { get; set; } // optional description
 
         //Nav properties
         public SpendingHeader? ExpenseHeader { get; set; }

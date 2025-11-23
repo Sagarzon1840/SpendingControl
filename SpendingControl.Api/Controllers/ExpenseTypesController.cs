@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
-using SpendingControl.Domain.Entities;
 using SpendingControl.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
-using System.IdentityModel.Tokens.Jwt;
+using SpendingControl.Api.Helpers;
+using SpendingControl.Api.Models;
+using System.Linq;
+using SpendingControl.Domain.Entities;
 
 namespace SpendingControl.Api.Controllers
 {
@@ -20,57 +21,50 @@ namespace SpendingControl.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetForUser()
         {
-            var userId = GetUserIdFromToken();
+            var userId = UserContextHelper.GetUserId(HttpContext);
             var list = await _service.GetByUserAsync(userId);
-
-            return Ok(list);
+            var result = list.Select(s => new SpendTypeResponseDto { Id = s.Id, Code = s.Code, Name = s.Name });
+            return Ok(result);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] SpendType dto)
+        public async Task<IActionResult> Create([FromBody] SpendTypeCreateDto dto)
         {
-            dto.UserId = GetUserIdFromToken();
-            var created = await _service.CreateAsync(dto);
-
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+            var entity = new SpendType
+            {
+                UserId = UserContextHelper.GetUserId(HttpContext),
+                Name = dto.Name
+            };
+            var created = await _service.CreateAsync(entity);
+            var response = new SpendTypeResponseDto { Id = created.Id, Code = created.Code, Name = created.Name };
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, response);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var userId = GetUserIdFromToken();
+            var userId = UserContextHelper.GetUserId(HttpContext);
             var entity = await _service.GetByIdAsync(id, userId);
-
-            return Ok(entity);
+            var response = new SpendTypeResponseDto { Id = entity.Id, Code = entity.Code, Name = entity.Name };
+            return Ok(response);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] SpendType dto)
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> Patch(int id, [FromBody] SpendTypePatchDto dto)
         {
-            var userId = GetUserIdFromToken();
-            dto.Id = id;
-
-            await _service.UpdateAsync(dto, userId);
-
+            var userId = UserContextHelper.GetUserId(HttpContext);
+            var current = await _service.GetByIdAsync(id, userId);
+            if (dto.Name != null) current.Name = dto.Name;
+            await _service.UpdateAsync(current, userId);
             return NoContent();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _service.DeleteAsync(id, GetUserIdFromToken());
-
+            var userId = UserContextHelper.GetUserId(HttpContext);
+            await _service.DeleteAsync(id, userId);
             return NoContent();
-        }
-
-        private Guid GetUserIdFromToken()
-        {
-            var sub = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            if (string.IsNullOrEmpty(sub) || !Guid.TryParse(sub, out var userId))
-                throw new UnauthorizedAccessException("Invalid user id in token");
-
-            return userId;
         }
     }
 }
