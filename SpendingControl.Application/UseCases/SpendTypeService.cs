@@ -47,25 +47,22 @@ namespace SpendingControl.Application.UseCases
             return await _repo.AddAsync(spendType);
         }
 
-        public async Task UpdateAsync(SpendType spendType, Guid userId)
+        public async Task UpdateAsync(int id, SpendType updateSpendType)
         {
-            if (spendType == null) throw new ArgumentNullException(nameof(spendType));
-            if (spendType.Id <= 0) throw new ArgumentException("Id must be positive", nameof(spendType.Id));
-            if (userId == Guid.Empty) throw new ArgumentException("userId is required", nameof(userId));
+            if (updateSpendType.Name?.Length > 200) throw new ArgumentException("Name has to be less than 200 characters", nameof(updateSpendType.Name));
 
-            var current = await _repo.GetByIdForUserAsync(userId, spendType.Id) ?? throw new KeyNotFoundException("Spend type not found");
-            spendType.Name = spendType.Name?.Trim();
+            var spendType = await _repo.GetByIdForUserAsync(updateSpendType.UserId, id) ?? throw new KeyNotFoundException("Spend type not found");
+            if (spendType is null) throw new ArgumentNullException(nameof(spendType));
 
-            if (string.IsNullOrWhiteSpace(spendType.Name)) throw new ArgumentException("Name is required", nameof(spendType.Name));
-            if (spendType.Name.Length > 200) throw new ArgumentException("Name too long", nameof(spendType.Name));
+            spendType.Name =
+                !string.IsNullOrWhiteSpace(updateSpendType.Name) && updateSpendType.Name != spendType.Name
+                ? updateSpendType.Name
+                : spendType.Name;
 
-            var existing = await _repo.GetByUserAsync(userId);
-            if (existing.Any(s => s.Id != spendType.Id && s.Name.Equals(spendType.Name, StringComparison.OrdinalIgnoreCase)))
-                throw new InvalidOperationException("A spend type with the same name already exists for this user.");
-
-            spendType.Code = current.Code;
-            spendType.UserId = current.UserId;
-            spendType.Validate();
+            if (updateSpendType.IsActive != spendType.IsActive)
+            {
+                spendType.IsActive = updateSpendType.IsActive;
+            }
 
             await _repo.UpdateAsync(spendType);
         }

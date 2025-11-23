@@ -11,5 +11,6 @@ namespace SpendingControl.Application.Interfaces
         Task<SpendingHeader?> GetByIdAsync(Guid id, Guid userId);
         Task<IEnumerable<SpendingHeader>> GetListAsync(Guid userId, DateTime? from = null, DateTime? to = null, int page = 1, int size = 50);
         Task<IEnumerable<(int ExpenseTypeId, decimal Total)>> GetExecutedByTypeAsync(Guid userId, DateTime from, DateTime to, IEnumerable<int>? filterExpenseTypeIds = null);
+        Task<bool> SoftDeleteAsync(Guid id, Guid userId); // nuevo método
     }
 }

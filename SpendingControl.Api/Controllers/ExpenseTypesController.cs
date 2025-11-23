@@ -23,7 +23,7 @@ namespace SpendingControl.Api.Controllers
         {
             var userId = UserContextHelper.GetUserId(HttpContext);
             var list = await _service.GetByUserAsync(userId);
-            var result = list.Select(s => new SpendTypeResponseDto { Id = s.Id, Code = s.Code, Name = s.Name });
+            var result = list.Select(s => new SpendTypeResponseDto { Id = s.Id, Code = s.Code, Name = s.Name, IsActive = s.IsActive });
             return Ok(result);
         }
 
@@ -52,10 +52,13 @@ namespace SpendingControl.Api.Controllers
         [HttpPatch("{id}")]
         public async Task<IActionResult> Patch(int id, [FromBody] SpendTypePatchDto dto)
         {
-            var userId = UserContextHelper.GetUserId(HttpContext);
-            var current = await _service.GetByIdAsync(id, userId);
-            if (dto.Name != null) current.Name = dto.Name;
-            await _service.UpdateAsync(current, userId);
+            SpendType spendType = new()
+            {
+                UserId = UserContextHelper.GetUserId(HttpContext),
+                Name = dto.Name,
+                IsActive = dto.IsActive
+            };
+            await _service.UpdateAsync(id, spendType);
             return NoContent();
         }
 

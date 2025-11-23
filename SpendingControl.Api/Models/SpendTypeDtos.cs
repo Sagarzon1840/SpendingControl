@@ -14,13 +14,7 @@ namespace SpendingControl.Api.Models
     {
         [StringLength(200)]
         public string? Name { get; set; }
-    }
-
-    public class SpendTypeUpdateDto
-    {
-        [Required]
-        [StringLength(200)]
-        public string Name { get; set; } = string.Empty;
+        public bool IsActive { get; set; }
     }
 
     public class SpendTypeResponseDto
@@ -28,5 +22,6 @@ namespace SpendingControl.Api.Models
         public int Id { get; set; }
         public int Code { get; set; }
         public string Name { get; set; } = string.Empty;
+        public bool IsActive { get; set; } = true;
     }
 }

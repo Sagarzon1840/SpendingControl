@@ -10,7 +10,7 @@ namespace SpendingControl.Application.Interfaces
         Task<IEnumerable<SpendType>> GetByUserAsync(Guid userId);
         Task<SpendType> GetByIdAsync(int id, Guid userId);
         Task<SpendType> CreateAsync(SpendType spendType);
-        Task UpdateAsync(SpendType spendType, Guid userId);
+        Task UpdateAsync(int id, SpendType dto);
         Task DeleteAsync(int id, Guid userId);
     }
 }

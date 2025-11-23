@@ -67,8 +67,12 @@ namespace SpendingControl.Infrastructure.Repositories
 
                     _db.SpendingHeaders.Add(header);
 
+                    decimal setWithdrawal = -1;
                     foreach (var d in header.Details)
-                        fund.ApplyWithdrawal(d.Amount);
+                    {
+                        setWithdrawal = fund.CurrentBalance - d.Amount;                        
+                        fund.ApplyWithdrawal(d.Amount, setWithdrawal);
+                    }
 
                     if (fund.CurrentBalance < 0)
                     {
@@ -130,6 +134,21 @@ namespace SpendingControl.Infrastructure.Repositories
             return await q.GroupBy(d => d.ExpenseTypeId)
                 .Select(g => new ValueTuple<int, decimal>(g.Key, g.Sum(x => x.Amount)))
                 .ToListAsync();
+        }
+
+        public async Task<bool> SoftDeleteAsync(Guid id, Guid userId)
+        {
+            if (id == Guid.Empty || userId == Guid.Empty) return false;
+            var header = await _db.SpendingHeaders.FirstOrDefaultAsync(h => h.Id == id);
+
+            if (header == null) return false;
+            if (header.UserId != userId) return false;
+            if (!header.IsValid) return true;
+            header.IsValid = false;
+
+            await _db.SaveChangesAsync();
+
+            return true;
         }
     }
 }

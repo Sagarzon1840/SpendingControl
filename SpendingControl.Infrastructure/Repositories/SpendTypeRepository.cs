@@ -16,7 +16,7 @@ namespace SpendingControl.Infrastructure.Repositories
 
         public async Task<IEnumerable<SpendType>> GetByUserAsync(Guid userId)
         {
-            return await _db.SpendTypes.Where(s => s.UserId == userId && s.IsActive).ToListAsync();
+            return await _db.SpendTypes.Where(s => s.UserId == userId).ToListAsync();
         }
 
         public async Task<SpendType?> GetByIdAsync(int id)
@@ -26,7 +26,7 @@ namespace SpendingControl.Infrastructure.Repositories
 
         public async Task<SpendType?> GetByIdForUserAsync(Guid userId, int id)
         {
-            return await _db.SpendTypes.Where(s => s.UserId == userId && s.Id == id && s.IsActive).FirstOrDefaultAsync();
+            return await _db.SpendTypes.Where(s => s.UserId == userId && s.Id == id).FirstOrDefaultAsync();
         }
 
         public async Task<SpendType> AddAsync(SpendType spendType)

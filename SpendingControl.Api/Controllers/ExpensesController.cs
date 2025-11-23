@@ -112,5 +112,16 @@ namespace SpendingControl.Api.Controllers
             };
             return Ok(response);
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> SoftDelete(Guid id)
+        {
+            var userId = UserContextHelper.GetUserId(HttpContext);
+            var exists = await _service.GetByIdAsync(id, userId);
+            if (exists == null) return NotFound();
+            var success = await _service.SoftDeleteAsync(id, userId);
+            if (!success) return BadRequest();
+            return NoContent();
+        }
     }
 }

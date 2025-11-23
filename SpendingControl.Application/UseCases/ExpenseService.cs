@@ -27,5 +27,12 @@ namespace SpendingControl.Application.UseCases
 
         public Task<IEnumerable<(int ExpenseTypeId, decimal Total)>> GetExecutedByTypeAsync(Guid userId, DateTime from, DateTime to, IEnumerable<int>? filterExpenseTypeIds = null)
             => _repo.GetExecutedByTypeAsync(userId, from, to, filterExpenseTypeIds);
+
+        public async Task<bool> SoftDeleteAsync(Guid id, Guid userId)
+        {
+            if (userId == Guid.Empty) return false;
+            if (id == Guid.Empty) return false;
+            return await _repo.SoftDeleteAsync(id, userId);
+        }
     }
 }
