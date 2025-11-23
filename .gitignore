@@ -37,6 +37,8 @@ publish/
 appsettings.*.Local.json
 secrets.json
 .env
+appsettings.Development.json
+appsettings.Local.json
 
 # Database files
 *.db
@@ -59,3 +61,25 @@ _ReSharper*/
 # Web specific
 node_modules/
 wwwroot/dist/
+
+# AWS Lambda
+*.zip
+aws-lambda-tools-defaults.json
+
+# Tool manifests
+/.config/dotnet-tools.json
+
+# Coverage
+coverage/
+*.coverage
+*.coveragejson
+
+# Upgrade artifacts
+.github/upgrades/dotnet-upgrade-plan.md
+.github/upgrades/dotnet-upgrade-report.md
+
+# Docker auxiliary
+Dockerfile.*
+
+# Temporary
+*.tmp
