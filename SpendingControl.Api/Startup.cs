@@ -102,10 +102,10 @@ public class Startup
         }
 
         app.UseHttpsRedirection();
+        app.UseRouting();
         app.UseCors("AllowAll");
         app.UseAuthentication();
         app.UseAuthorization();
-        app.UseRouting();
 
         app.UseEndpoints(endpoints =>
         {
