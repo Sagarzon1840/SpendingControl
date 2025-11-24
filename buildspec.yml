@@ -10,7 +10,7 @@ phases:
       - echo "Restaurando dependencias..."
       - dotnet restore ./SpendingControl.Api/SpendingControl.Api.csproj
       - echo "Publicando Lambda .NET 8..."
-      - dotnet publish ./SpendingControl.Api/SpendingControl.Api.csproj -c Release -o ./output
+      - dotnet publish ./SpendingControl.Api/SpendingControl.Api.csproj -c Release -o ./output -r linux-x64 --self-contained false /p:CopyLocalLockFileAssemblies=true
 
 artifacts:
   files:
