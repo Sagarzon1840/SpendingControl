@@ -4,16 +4,15 @@ phases:
   install:
     runtime-versions:
       dotnet: 8.0
-    commands:
-      - dotnet tool install -g Amazon.Lambda.Tools || dotnet tool update -g Amazon.Lambda.Tools
-      - export PATH="$PATH:/root/.dotnet/tools"
+
   build:
     commands:
-      - echo "BUILDING LAMBDA PACKAGE"
-      - cd SpendingControl.Api
-      - dotnet restore
-      - dotnet lambda package --configuration Release --framework net8.0 --output-package ../backend.zip
+      - echo "Restaurando dependencias..."
+      - dotnet restore ./SpendingControl.Api/SpendingControl.Api.csproj
+
+      - echo "Publicando Lambda .NET 8..."
+      - dotnet publish ./SpendingControl.Api/SpendingControl.Api.csproj -c Release -o ./output
 
 artifacts:
   files:
-    - backend.zip
+    - output/**/*
