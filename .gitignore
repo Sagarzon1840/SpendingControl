@@ -39,6 +39,8 @@ secrets.json
 .env
 appsettings.Development.json
 appsettings.Local.json
+SpendingControl.Api/appsettings.Development.json
+SpendingControl.Api/Properties/launchSettings.json
 
 # Database files
 *.db

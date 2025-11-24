@@ -14,13 +14,17 @@ namespace SpendingControl.Infrastructure.Configuration
             // Use configured connection string key 'Default'
             string? connectionString = configuration.GetConnectionString("Default");
 
-            services.AddDbContext<AppDbContext>(options =>
+            services.AddDbContextPool<AppDbContext>(options =>
             {
-                options.UseSqlServer(connectionString, options =>
+                options.UseSqlServer(connectionString, sql =>
                 {
-                    options.EnableRetryOnFailure(maxRetryCount: 5,maxRetryDelay: TimeSpan.FromSeconds(15), errorNumbersToAdd: null);
+                    sql.EnableRetryOnFailure(
+                        maxRetryCount: 8,
+                        maxRetryDelay: TimeSpan.FromSeconds(30),
+                        errorNumbersToAdd: null);
                 });
             });
+
 
             // Repositories
             services.AddScoped<ISpendTypeRepository, SpendTypeRepository>();
