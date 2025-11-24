@@ -55,6 +55,7 @@ namespace SpendingControl.Api.Models
         public string? MerchantName { get; set; }
         public string? Observations { get; set; }
         public DocumentType DocumentType { get; set; }
+        public bool IsValid { get; set; }
         public IEnumerable<SpendingDetailResponseDto> Details { get; set; } = Array.Empty<SpendingDetailResponseDto>();
         public IEnumerable<OverdraftWarningDto> OverdraftWarnings { get; set; } = Array.Empty<OverdraftWarningDto>();
     }

@@ -67,20 +67,20 @@ namespace SpendingControl.Infrastructure.Repositories
 
                     _db.SpendingHeaders.Add(header);
 
-                    decimal setWithdrawal = -1;
                     foreach (var d in header.Details)
                     {
-                        setWithdrawal = fund.CurrentBalance - d.Amount;                        
-                        fund.ApplyWithdrawal(d.Amount, setWithdrawal);
+                        previousFundBalance = previousFundBalance - d.Amount;
+                        if (d.Amount <= 0) throw new ArgumentException("Withdrawal amount must be positive.", nameof(d.Amount));
+                        if (previousFundBalance < 0) break;
                     }
 
-                    if (fund.CurrentBalance < 0)
-                    {
-                        // mark invalid and do not persist details impact on analytics
+                    fund.ApplyWithdrawal(previousFundBalance);
+
+                    if (previousFundBalance < 0)
                         header.IsValid = false;
-                    }
 
                     await _db.SaveChangesAsync();
+
 
                     var executedByType = header.Details
                         .GroupBy(d => d.ExpenseTypeId)
@@ -102,7 +102,7 @@ namespace SpendingControl.Infrastructure.Repositories
                                 ExpenseTypeName = spendTypes.TryGetValue(kv.Key, out var name) ? name : string.Empty,
                                 Budget = previousFundBalance,
                                 Executed = kv.Value,
-                                Overdraft = kv.Value - previousFundBalance
+                                Overdraft = Math.Abs(previousFundBalance)
                             });
                         }
                     }

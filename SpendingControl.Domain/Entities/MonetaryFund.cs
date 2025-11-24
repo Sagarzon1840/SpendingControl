@@ -35,11 +35,9 @@ namespace SpendingControl.Domain.Entities
         }
 
         // Apply a withdrawal (spending)
-        public void ApplyWithdrawal(decimal amount, decimal setWithdrawal)
+        public void ApplyWithdrawal(decimal setWithdrawal)
         {
-            if (amount <= 0) throw new ArgumentException("Withdrawal amount must be positive.", nameof(amount));            
             if (setWithdrawal < 0) return;
-
             CurrentBalance = setWithdrawal;
         }
     }

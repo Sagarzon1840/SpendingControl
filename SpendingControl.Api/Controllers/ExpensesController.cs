@@ -29,6 +29,7 @@ namespace SpendingControl.Api.Controllers
                 MerchantName = h.MerchantName,
                 Observations = h.Observations,
                 DocumentType = h.DocumentType,
+                IsValid = h.IsValid,
                 Details = h.Details.Select(d => new SpendingDetailResponseDto
                 {
                     Id = d.Id,

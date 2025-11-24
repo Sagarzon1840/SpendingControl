@@ -43,7 +43,7 @@ namespace SpendingControl.Application.UseCases
             if (existing.Any(s => s.Name.Equals(spendType.Name, StringComparison.OrdinalIgnoreCase)))
                 throw new InvalidOperationException("A spend type with the same name already exists for this user.");
 
-            spendType.Code = 0; // repo will assign
+            spendType.Code = 0;
             return await _repo.AddAsync(spendType);
         }
 
@@ -53,6 +53,10 @@ namespace SpendingControl.Application.UseCases
 
             var spendType = await _repo.GetByIdForUserAsync(updateSpendType.UserId, id) ?? throw new KeyNotFoundException("Spend type not found");
             if (spendType is null) throw new ArgumentNullException(nameof(spendType));
+
+            var existing = await _repo.GetByUserAsync(spendType.UserId);
+            if (existing.Any(s => s.Name.Equals(spendType.Name, StringComparison.OrdinalIgnoreCase)))
+                throw new InvalidOperationException("A spend type with the same name already exists for this user.");
 
             spendType.Name =
                 !string.IsNullOrWhiteSpace(updateSpendType.Name) && updateSpendType.Name != spendType.Name

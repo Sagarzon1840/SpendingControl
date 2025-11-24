@@ -33,7 +33,8 @@ namespace SpendingControl.Api.Controllers
             var entity = new SpendType
             {
                 UserId = UserContextHelper.GetUserId(HttpContext),
-                Name = dto.Name
+                Name = dto.Name,
+                IsActive = dto.IsActive
             };
             var created = await _service.CreateAsync(entity);
             var response = new SpendTypeResponseDto { Id = created.Id, Code = created.Code, Name = created.Name };

@@ -10,8 +10,7 @@ namespace SpendingControl.Infrastructure.Configuration
     public static class DependencyInjection
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
-        {
-            // Use configured connection string key 'Default'
+        {            
             string? connectionString = configuration.GetConnectionString("Default");
 
             services.AddDbContextPool<AppDbContext>(options =>
