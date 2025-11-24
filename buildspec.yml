@@ -9,10 +9,11 @@ phases:
     commands:
       - echo "Restaurando dependencias..."
       - dotnet restore ./SpendingControl.Api/SpendingControl.Api.csproj
-
       - echo "Publicando Lambda .NET 8..."
       - dotnet publish ./SpendingControl.Api/SpendingControl.Api.csproj -c Release -o ./output
 
 artifacts:
   files:
-    - output/**/*
+    - '**/*'
+  base-directory: output
+  discard-paths: yes
